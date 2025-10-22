@@ -30,3 +30,34 @@ const idezetek = [
     { "idezet": "Ne hagyd, hogy a megélhetés iránti törekvés megakadályozzon abban, hogy életet élj.", "szerzo": "John Wooden" },
     { "idezet": "Az életed akkor javul, ha te is fejlődsz.", "szerzo": "Brian Tracy" }
 ];
+
+// Kedvencekhez adás funkció
+function kedvencekhezAdas(idezetIndex) {
+    const kedvencek = JSON.parse(localStorage.getItem('kedvencek')) || [];
+    const idezet = idezetek[idezetIndex];
+    kedvencek.push(idezet);
+    localStorage.setItem('kedvencek', JSON.stringify(kedvencek));
+    alert("Idézet hozzáadva a kedvencekhez!");
+}
+// Idézet váltó funkciók
+let currentIndex = 0;
+function showNextQuote() {
+    currentIndex = (currentIndex + 1) % idezetek.length;
+    document.getElementById('idezet').innerText = `"${idezetek[currentIndex].idezet}"`;
+    document.getElementById('szerzo').innerText = `- ${idezetek[currentIndex].szerzo}`;
+}
+// Vissza az előző idézethez
+function showPreviousQuote() {
+    currentIndex = (currentIndex - 1 + idezetek.length) % idezetek.length;
+    document.getElementById('idezet').innerText = `"${idezetek[currentIndex].idezet}"`;
+    document.getElementById('szerzo').innerText = `- ${idezetek[currentIndex].szerzo}`;
+}
+// Eseménykezelők hozzárendelése gombokhoz
+document.getElementById('hozzad').addEventListener('click', kedvencekhezAdas.bind(null, currentIndex));
+document.getElementById('jobbra').addEventListener('click', showNextQuote);
+document.getElementById('balra').addEventListener('click', showPreviousQuote);
+// Kezdeti idézet megjelenítése
+document.getElementById('idezet').innerText = `"${idezetek[currentIndex].idezet}"`;
+document.getElementById('szerzo').innerText = `- ${idezetek[currentIndex].szerzo}`;
+/////
+document.body.innerHTML += '<p>mari</p>';
