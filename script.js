@@ -1,5 +1,6 @@
 const idezetek = [
     { "idezet": "Az egyetlen gát a holnap megvalósítása előtt a mai kétségeink.", "szerzo": "Franklin D. Roosevelt" },
+    {"idezet": "Az élet nem habostorta!", "szerzo": "Bontovics Ignác" },
     { "idezet": "Minden nehézség közepén ott rejlik a lehetőség.", "szerzo": "Albert Einstein" },
     { "idezet": "A siker nem végleges, a kudarc nem végzetes: a folytatáshoz szükséges bátorság számít.", "szerzo": "Winston Churchill" },
     { "idezet": "Az élet az, ami akkor történik, amikor más terveket készítesz.", "szerzo": "John Lennon" },
@@ -31,33 +32,64 @@ const idezetek = [
     { "idezet": "Az életed akkor javul, ha te is fejlődsz.", "szerzo": "Brian Tracy" }
 ];
 
-// Kedvencekhez adás funkció
-function kedvencekhezAdas(idezetIndex) {
-    const kedvencek = JSON.parse(localStorage.getItem('kedvencek')) || [];
-    const idezet = idezetek[idezetIndex];
-    kedvencek.push(idezet);
-    localStorage.setItem('kedvencek', JSON.stringify(kedvencek));
-    alert("Idézet hozzáadva a kedvencekhez!");
+let aktualisIndex = 0;
+let kedvencek = [];
+
+function frissitGombok() {
+    document.getElementById("balragomb").disabled = aktualisIndex === 0;
+    document.getElementById("jobbragomb").disabled = aktualisIndex === idezetek.length - 1;
 }
-// Idézet váltó funkciók
-let currentIndex = 0;
-function showNextQuote() {
-    currentIndex = (currentIndex + 1) % idezetek.length;
-    document.getElementById('idezet').innerText = `"${idezetek[currentIndex].idezet}"`;
-    document.getElementById('szerzo').innerText = `- ${idezetek[currentIndex].szerzo}`;
+
+function idezetMegjelenitese() {
+    const idezetObj = idezetek[aktualisIndex];
+    document.getElementById("idezetkocka").innerHTML = `
+        <div id="idezet">"${idezetObj.idezet}"</div>
+        <div id="szerzo">- ${idezetObj.szerzo}</div>
+    `;
+    frissitGombok();
 }
-// Vissza az előző idézethez
-function showPreviousQuote() {
-    currentIndex = (currentIndex - 1 + idezetek.length) % idezetek.length;
-    document.getElementById('idezet').innerText = `"${idezetek[currentIndex].idezet}"`;
-    document.getElementById('szerzo').innerText = `- ${idezetek[currentIndex].szerzo}`;
+
+function kovetkezoIdezet() {
+    if (aktualisIndex < idezetek.length - 1) {
+        aktualisIndex++;
+        idezetMegjelenitese();
+    }
 }
-// Eseménykezelők hozzárendelése gombokhoz
-document.getElementById('hozzad').addEventListener('click', kedvencekhezAdas.bind(null, currentIndex));
-document.getElementById('jobbra').addEventListener('click', showNextQuote);
-document.getElementById('balra').addEventListener('click', showPreviousQuote);
-// Kezdeti idézet megjelenítése
-document.getElementById('idezet').innerText = `"${idezetek[currentIndex].idezet}"`;
-document.getElementById('szerzo').innerText = `- ${idezetek[currentIndex].szerzo}`;
-/////
-document.body.innerHTML += '<p>mari</p>';
+
+function elozoIdezet() {
+    if (aktualisIndex > 0) {
+        aktualisIndex--;
+        idezetMegjelenitese();
+    }
+}
+
+function kedvenchezAdas() {
+    const idezetObj = idezetek[aktualisIndex];
+    if (!kedvencek.some(e => e.idezet === idezetObj.idezet && e.szerzo === idezetObj.szerzo)) {
+        kedvencek.push(idezetObj);
+        kedvencekMegjelenitese();
+    }
+}
+
+function kedvencekMegjelenitese() {
+    let lista = document.getElementById("kedvencekLista");
+    if (!lista) {
+        lista = document.createElement("div");
+
+        lista.id = "kedvencekLista";
+        lista.style.marginTop = "30px";
+                lista.style.color = "white";
+        document.querySelector(".box").appendChild(lista);
+    }
+    lista.innerHTML = "<h2>Kedvenc idézeteim:</h2>" + kedvencek.map(q =>
+        `<div class="kedvenc-idezet">"${q.idezet}"<br><span>- ${q.szerzo}</span></div>`
+    ).join("");
+}
+
+// Eseménykezelők
+document.getElementById("balragomb").addEventListener("click", elozoIdezet);
+document.getElementById("jobbragomb").addEventListener("click", kovetkezoIdezet);
+document.getElementById("hozzaad").addEventListener("click", kedvenchezAdas);
+
+// Első idézet megjelenítése
+idezetMegjelenitese();
